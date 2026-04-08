@@ -9,10 +9,11 @@ interface HeroProps {
 export function Hero({ language }: HeroProps) {
   const { scrollY } = useScroll();
   const opacity = useTransform(scrollY, [0, 360], [1, 0]);
+  const baseUrl = import.meta.env.BASE_URL;
   const profilePhotoCandidates = [
-    "/profile-photo.jpg",
-    "/profile-photo.png",
-    "/profile-photo.webp"
+    `${baseUrl}profile-photo.jpg`,
+    `${baseUrl}profile-photo.png`,
+    `${baseUrl}profile-photo.webp`
   ];
   const [profilePhotoIndex, setProfilePhotoIndex] = useState(0);
   const currentProfilePhoto = profilePhotoCandidates[profilePhotoIndex];
