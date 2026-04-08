@@ -1,10 +1,9 @@
-name: Deploy Portfolio
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
       - main
-      - master
   workflow_dispatch:
 
 permissions:
@@ -13,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -27,46 +26,30 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Determine Vite base path
-        id: base
-        run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          USER_SITE="${GITHUB_REPOSITORY_OWNER}.github.io"
-
-          if [ "$REPO_NAME" = "$USER_SITE" ]; then
-            echo "path=/" >> "$GITHUB_OUTPUT"
-          else
-            echo "path=/$REPO_NAME/" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build site
-        run: npm run build -- --base="${{ steps.base.outputs.path }}"
+      - name: Build
+        run: npm run build
 
-      - name: Prepare SPA fallback
-        run: |
-          cp dist/index.html dist/404.html
-          touch dist/.nojekyll
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
-      - name: Upload Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: ./dist
 
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
+    needs: build
+    runs-on: ubuntu-latest
 
     steps:
       - name: Deploy to GitHub Pages
