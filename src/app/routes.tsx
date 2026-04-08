@@ -3,10 +3,7 @@ import Home from "./pages/Home";
 import ProjectDetail from "./pages/ProjectDetail";
 import NotFound from "./pages/NotFound";
 
-const basename =
-  import.meta.env.BASE_URL === "/"
-    ? "/"
-    : import.meta.env.BASE_URL.replace(/\/$/, "");
+const basename = import.meta.env.BASE_URL;
 
 export const router = createBrowserRouter([
   {
@@ -23,4 +20,7 @@ export const router = createBrowserRouter([
   },
 ], {
   basename,
+  future: {
+    v7_prependBasename: true,
+  },
 });
