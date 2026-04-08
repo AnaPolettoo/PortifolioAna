@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Language } from "../data/projects";
 import { motion, useScroll, useTransform } from "motion/react";
+import profilePhoto from "../../assets/profilePhoto.jpg";
 
 interface HeroProps {
   language: Language;
@@ -9,11 +10,8 @@ interface HeroProps {
 export function Hero({ language }: HeroProps) {
   const { scrollY } = useScroll();
   const opacity = useTransform(scrollY, [0, 360], [1, 0]);
-  const baseUrl = import.meta.env.BASE_URL;
   const profilePhotoCandidates = [
-    `${baseUrl}profile-photo.jpg`,
-    `${baseUrl}profile-photo.png`,
-    `${baseUrl}profile-photo.webp`
+    profilePhoto
   ];
   const [profilePhotoIndex, setProfilePhotoIndex] = useState(0);
   const currentProfilePhoto = profilePhotoCandidates[profilePhotoIndex];
