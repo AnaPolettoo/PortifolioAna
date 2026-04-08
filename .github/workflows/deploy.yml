@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
   workflow_dispatch:
 
 permissions:
@@ -11,35 +12,44 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: pages
-  cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v6
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build
-        run: npm run build
+        run: |
+          BASE_PATH="${{ steps.pages.outputs.base_path }}"
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+          if [ -n "$BASE_PATH" ]; then
+            npm run build -- --base="${BASE_PATH}/"
+          else
+            npm run build -- --base="/"
+          fi
+
+      - name: Prepare SPA fallback
+        run: |
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
 
@@ -54,4 +64,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
